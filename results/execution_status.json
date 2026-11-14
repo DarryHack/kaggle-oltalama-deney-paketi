@@ -1,0 +1,27 @@
+{
+  "requested_dataset": "naserabdullahalam/phishing-email-dataset",
+  "requested_url": "https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset?resource=download",
+  "raw_dataset_downloaded": false,
+  "real_dataset_training_completed": false,
+  "real_dataset_test_metrics_available": false,
+  "github_uploaded": false,
+  "software_tests_passed": 25,
+  "software_tests_failed": 0,
+  "software_tests_are_research_results": false,
+  "observed_access_failures": [
+    "requests: www.kaggle.com DNS resolution failed (NameResolutionError)",
+    "web: Kaggle dataset download route redirected to an account/login page",
+    "container.download: dataset page download failed; API download URL could not be fetched"
+  ],
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "libraries": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "matplotlib": "3.10.8",
+    "pytest": "9.0.2",
+    "threadpoolctl": "3.6.0"
+  },
+  "next_required_input": "The original Kaggle ZIP or phishing_email.csv bytes must be available to the execution environment."
+}

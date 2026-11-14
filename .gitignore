@@ -1,0 +1,11 @@
+data/
+phishing_email.csv
+**/phishing_email.csv
+*.zip
+*.joblib
+*.pkl
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+kaggle.json

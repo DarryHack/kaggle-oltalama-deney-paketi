@@ -1,0 +1,19 @@
+flowchart TD
+    A[Belirtilen Kaggle veri seti: phishing_email.csv] --> B[Şema ve etiket kontrolü / SHA-256]
+    B --> C[Metin temizliği / tekrar ve çelişki denetimi]
+    C --> D[Şablon grupları: aynı grup aynı bölmede]
+    D --> E[Eğitim ve doğrulama]
+    D --> T[Bağımsız test: model seçimine kapalı]
+    E --> F[TF-IDF temsili]
+    E --> G[14 duygu ve aciliyet göstergesi]
+    F --> H[A: Metin + lojistik regresyon]
+    G --> I[B: Göstergeler + lojistik regresyon]
+    F --> J[C: Birleşik + lojistik regresyon]
+    G --> J
+    H --> K[Doğrulamada C seçimi / geliştirme verisinde yeniden eğitim]
+    I --> K
+    J --> K
+    K --> L[Test değerlendirmesi]
+    T --> L
+    L --> M[F1 / AP / ROC-AUC / karışıklık matrisi]
+    M --> N[C-A farkı ve eşlenik grup bootstrap]
