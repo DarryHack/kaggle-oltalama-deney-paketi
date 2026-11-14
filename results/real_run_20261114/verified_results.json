@@ -1,0 +1,80 @@
+{
+  "status": "completed",
+  "started_utc": "2026-11-14T19:21:09.131402+00:00",
+  "finished_utc": "2026-11-14T19:23:34.238832+00:00",
+  "elapsed_seconds": 145.107455369,
+  "execution_environment": "ChatGPT container, CPU; GitHub Actions only downloaded the input",
+  "dataset_handle": "naserabdullahalam/phishing-email-dataset",
+  "dataset_version": 1,
+  "input_file_name": "phishing_email.csv",
+  "input_file_bytes": 106603543,
+  "input_sha256": "73a5c5410baf46ed69517fedfd37910f2e93777dc504b73ea483bc16be3a69d1",
+  "download_workflow_run": 43631449962,
+  "source_commit_containing_executed_code": "cc4b2fa5b98da4e8701a4b1903fcd63d789d87cd",
+  "experiment_git_blob_sha1": "ec615297cc7058c3b34afa540ae7a464d8706662",
+  "data_audit": {
+    "raw_rows": 82486,
+    "raw_label_0": 39595,
+    "raw_label_1": 42891,
+    "missing_text_or_label_rows": 0,
+    "empty_after_cleaning_rows": 1,
+    "conflicting_text_groups": 0,
+    "duplicate_rows_removed": 409,
+    "retained_rows": 82076,
+    "retained_label_0": 39232,
+    "retained_label_1": 42844,
+    "template_groups": 80787,
+    "language_detection_performed": false,
+    "emotion_ground_truth_available": false
+  },
+  "split_counts": {
+    "train": {"rows": 49246, "label_0": 23539, "label_1": 25707},
+    "validation": {"rows": 16415, "label_0": 7847, "label_1": 8568},
+    "test": {"rows": 16415, "label_0": 7846, "label_1": 8569},
+    "final_refit_train_plus_validation": 65661
+  },
+  "configuration": {
+    "seed": 42,
+    "C_grid": [0.1, 1.0, 10.0],
+    "selected_C": {"A_text_only": 10.0, "B_cues_only": 1.0, "C_text_and_cues": 10.0},
+    "max_features": 50000,
+    "max_chars": 20000,
+    "cue_features": 14,
+    "test_threshold": 0.5,
+    "class_weight": "balanced",
+    "ngram_range": [1, 2],
+    "selection_metric": "validation_macro_F1",
+    "split": "first fold of group-stratified 5-fold outer, 4-fold inner; ONE fixed split, NOT averaged cross-validation"
+  },
+  "metrics_file": "metrics.csv",
+  "paired_comparison": {
+    "quantity": "positive_F1_C_minus_A",
+    "observed_delta": -0.00023424933568239048,
+    "ci_95_percentile": [-0.0005386457890851404, 0.00005844328937095466],
+    "bootstrap_replicates": 1000,
+    "valid_replicates": 1000,
+    "resampling_unit": "heuristic_template_group",
+    "seed": 44,
+    "interpretation": "No supported positive-class F1 improvement from the added cues in this fixed split; interval includes zero. Not an equivalence or definitive inferiority claim."
+  },
+  "verification": {
+    "status": "passed",
+    "saved_test_predictions_independently_reproduce_checked_metrics": true,
+    "exact_hash_overlap_between_splits": 0,
+    "heuristic_group_overlap_between_splits": 0,
+    "software_tests_passed": 25,
+    "software_tests_are_research_results": false
+  },
+  "dependencies": {
+    "python": "3.13.5", "numpy": "2.3.5", "pandas": "2.2.3", "scipy": "1.17.0",
+    "scikit-learn": "1.8.0", "matplotlib": "3.10.8", "threadpoolctl": "3.6.0"
+  },
+  "limitations": [
+    "Positive label pools spam and phishing; these are not pure credential-phishing or production-security accuracy estimates.",
+    "Emotion/urgency features are frozen English lexical proxies, not validated human emotion labels.",
+    "Single grouped internal split; no source-held-out, temporal, Turkish or external evaluation.",
+    "Heuristic grouping does not remove every semantic near duplicate or source-domain bias.",
+    "Text is truncated after cleaning at 20000 characters; source preprocessing can affect multiword cue matches."
+  ],
+  "full_evidence": "The delivered Oltalama_Gercek_Deney_Kanitlari.zip contains row-level test probabilities, split hashes, manifests, figures and verification code; raw email bodies are excluded."
+}
