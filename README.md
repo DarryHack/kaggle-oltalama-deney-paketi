@@ -62,7 +62,7 @@ Alternatif indirme: `python experiment.py --download --output results/yeni_calis
 
 Bu depoda gerçek sonuç CSV'si ve toplu doğrulama kaydı bulunur. Yazarlara teslim edilen **Oltalama_Gercek_Deney_Kanitlari.zip** ayrıca örnek düzeyi test olasılıkları, ayrım hash kayıtları, çalıştırma manifesti, model seçimi kayıtları, grafikler ve yeniden doğrulama kodunu içerir. Ham e-posta metinleri bu kanıt paketine eklenmez. Güvenilmeyen pickle/joblib dosyalarını açmayın.
 
-Tam metin ve sunum kod satırı içermez; yöntem akışı ve gerçek ölçümleri içerir. Kaynak kod referansı bu deponun gerçek bağlantısıdır. Depo kontrol tarihinde **özel erişimli** olduğundan öğretim elemanı ve dinleyicilerin inceleyebilmesi için gerekli erişim ayrıca sağlanmalıdır. Görünürlük kendiliğinden değiştirilmemiştir.
+Tam metin ve sunum kod satırı içermez; yöntem akışı ve gerçek ölçümleri içerir. Kaynak kod referansı bu deponun gerçek bağlantısıdır. Depo herkese açıktır (kontrol: 14.11.2026); öğretim elemanı ve dinleyiciler doğrudan inceleyebilir.
 
 ## Sınırlılıklar
 
