@@ -4,102 +4,74 @@
 **Begüm Düger** — ORCID: https://orcid.org/0009-0005-4847-172X  
 Gazi University, Information Technologies – Security Program, Ankara, Türkiye
 
-## Mevcut durum — araştırma sonucu değildir
+## Gerçek deney tamamlandı — 14 Kasım 2026
 
-Bu paket yalnızca aşağıdaki veri seti için hazırlanmıştır:
+Yalnızca [naserabdullahalam/phishing-email-dataset](https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset) veri kümesinin **sürüm 1** içindeki `phishing_email.csv` dosyası kullanıldı. Başka veri veya sentetik araştırma verisi kullanılmadı. Kaggle indirmesi GitHub Actions ile, veri denetimi, eğitim ve test ChatGPT çalışma konteynerinde CPU üzerinde yapıldı.
 
-https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset?resource=download
+**Ölçüm dosyaları:** [metrics.csv](results/real_run_20261114/metrics.csv) · [Veri kaynağı, ayrım ve doğrulama kaydı](results/real_run_20261114/verified_results.json).
 
-Veri kümesi tanımlayıcısı: `naserabdullahalam/phishing-email-dataset`  
-Hedef dosya: `phishing_email.csv`  
-Beklenen sütunlar: `text_combined`, `label`
+| Model | Doğruluk % | Kesinlik % | Duyarlılık % | Pozitif F1 % | AP |
+|---|---:|---:|---:|---:|---:|
+| A — TF-IDF + lojistik regresyon | 99,10 | 99,07 | 99,22 | 99,14 | 0,999238 |
+| B — 14 duygu/aciliyet göstergesi + lojistik regresyon | 60,51 | 78,50 | 33,54 | 47,00 | 0,658643 |
+| C — TF-IDF + 14 gösterge + lojistik regresyon | 99,08 | 99,06 | 99,18 | 99,12 | 0,999246 |
 
-**Hazırlama ortamında ham CSV indirilemedi. Kaggle verisi üzerinde eğitim veya performans değerlendirmesi yapılmadı. Bu pakette doğruluk/F1 sonucu, eğitilmiş araştırma modeli veya tamamlanmış deney iddiası yoktur.** GitHub'a da henüz yüklenmemiştir.
+A modelinde TN/FP/FN/TP = 7766/80/67/8502; B'de 7059/787/5695/2874; C'de 7765/81/70/8499. Her model aynı **16.415 test kaydında** değerlendirildi. Eşik 0,5'tir.
 
-`results/software_tests.txt` ve `results/software_tests.xml` dosyaları 25 yazılım testinin çıktısıdır. Testlerdeki küçük, yapay birim-test girdileri yalnızca programın işlemlerini denetler; Kaggle kayıtları değildir, deney verisine eklenmez ve makalede araştırma sonucu olarak kullanılamaz. `execution_status.json` veri erişiminin durumunu ayrıca kaydeder.
+**Ana bulgu:** C−A pozitif sınıf F1 farkı **−0,0002342493**. 1.000 tekrarlı eşlenik şablon-grubu bootstrap %95 aralığı **[−0,0005386458; 0,0000584433]**, yani sıfırı içeriyor. Bu ayrımda ek göstergelerin F1 üstünlüğü gösterilemedi. Bu sonuç kesin kötüleşme, eşdeğerlik veya bütün duygu modellerinin işe yaramadığı iddiası değildir.
 
-## En kısa çalıştırma: Kaggle Notebook
+Kaydedilen test tahminlerinden ölçümler ayrıca yeniden hesaplandı ve doğrulandı. **25 yazılım testi de geçti; bu test sayısı sınıflandırma başarısı değildir.**
 
-1. `Kaggle_Deney.ipynb` dosyasını Kaggle Notebook'a aktarın.
-2. **Add Input / Add Data** bölümünden tam olarak `naserabdullahalam/phishing-email-dataset` veri setini ekleyin. Benzer isimli başka bir veri seti seçmeyin.
-3. CPU ortamında **Run All** çalıştırın. Notebook, bağlı `phishing_email.csv` dosyasını kullanır; bağlı dosya varsa internet erişimi veya GPU gerekmez. Gerekli Python kütüphaneleri ortamda kurulu olmalıdır.
-4. Son hücre, yalnızca başarılı deneyden sonra sonuçları ZIP yapar. Notebook'un teslim edilen sürümündeki çıktı hücreleri bilerek boştur; çalıştırılmış görüntüsü verilmemiştir.
+## Veri ve kaynak izi
 
-Veri bağlı değilse notebook durur. Sentetik veri, başka veri seti veya başkasının sonuçları otomatik yedek olarak kullanılmaz.
+- Ham veri: **82.486** kayıt; 39.595 etiket 0, 42.891 etiket 1.
+- Bir boş içerik ve 409 normalize metin tekrarı çıkarıldı; **82.076** kayıt kaldı. Çelişkili normalize-metin etiketi bulunmadı.
+- Eğitim **49.246**, doğrulama **16.415**, test **16.415**. Nihai yeniden eğitim, ilk iki bölmenin toplamı olan **65.661** kayıtla yapıldı.
+- Bölmeler arası tam metin hash ve sezgisel şablon hash çakışması **0**. Bu, tüm anlamsal yakın kopyaların giderildiği anlamına gelmez.
+- CSV: 106.603.543 bayt; SHA-256 `73a5c5410baf46ed69517fedfd37910f2e93777dc504b73ea483bc16be3a69d1`.
+- Veri indirme kaydı: [Actions run 43631449962](https://github.com/DarryHack/kaggle-oltalama-deney-paketi/actions/runs/43631449962).
+- Çalıştırılan `experiment.py` Git blob: `ec615297cc7058c3b34afa540ae7a464d8706662`; aynı kodu içeren commit: `cc4b2fa5b98da4e8701a4b1903fcd63d789d87cd`.
 
-## Terminalden çalıştırma
+## Deney tasarımı
 
-Python 3.11 veya üstü önerilir. Paket kökünde:
+A: 1–2 gram TF-IDF, en çok 50.000 özellik, `min_df=2`, alt-doğrusal terim frekansı. B: aciliyet, korku/tehdit, ödül ve güven/otorite için önceden dondurulmuş İngilizce sözlüklerden 14 gösterge. Her grupta varlık, 100 sözcük başına sıklık ve logaritmik eşleşme sayısı; ayrıca iki ortak-varlık göstergesi. C: aynı metin ve gösterge temsillerinin birleşimi. Bu sözlükler gerçek insan duygusu etiketleri değildir.
+
+Metinler deterministik olarak normalize edilir; HTML temizlenir, yakalanabilen URL/e-postalar maskelenir, metin ilk 20.000 normalize karakterle sınırlandırılır. E-posta bağlantıları ziyaret edilmez. Aynı normalize metnin tekrarları çıkarılır; çelişkili etiketli metin grupları varsa tamamen çıkarılır. Sayı/noktalama varyantlarını birleştiren sezgisel şablon grupları bölmeler arasında paylaşılmaz.
+
+İlk grup-tabakalı 5-kat ayrımından test, kalan verinin ilk 4-kat ayrımından doğrulama seçilir; yaklaşık %60/%20/%20. **Bu bir tek-sabit-ayrım deneyidir, ortalaması alınmış çapraz doğrulama değildir.** Tohum 42'dir. TF-IDF ve StandardScaler yalnızca ilgili eğitim bölümünde öğrenilir.
+
+Tüm modeller `liblinear`, `class_weight=balanced`, `max_iter=3000`, `tol=1e-4` lojistik regresyondur. C={0,1; 1; 10} içinden yalnızca doğrulama macro-F1 ile seçim yapılır; eşitlikte küçük C kullanılır. Seçilenler A=10, B=1, C=10. Seçim sonrası eğitim+doğrulama birleştirilerek yeniden eğitim, ardından ayrılmış testte tek son değerlendirme yapılır. Test eşiği 0,5 olarak sabittir.
+
+AP, average precision'dır; trapez PR-AUC diye sunulmaz. F1 farkı için bootstrap grupları eşlenik yeniden örnekler; aralık sabit modeller ve tek ayrım koşulundadır.
+
+## Yeniden çalıştırma
+
+Python 3.11 veya üstü; ölçülen ortam Python 3.13.5, numpy 2.3.5, pandas 2.2.3, scipy 1.17.0, scikit-learn 1.8.0, matplotlib 3.10.8, threadpoolctl 3.6.0.
 
 ```bash
 python -m pip install -r requirements.txt
 python -m pytest -q
-python experiment.py --download --output results/kaggle_run
+python experiment.py --csv /tam/yol/phishing_email.csv --output results/yeni_calisma
 ```
 
-`--download`, yalnızca yukarıdaki Kaggle tanımlayıcısını `kagglehub` ile indirir. Kaggle kimlik doğrulaması veya internet kısıtı varsa program açık hata verir. Şifre veya API anahtarlarını kaynak koda, GitHub'a ya da sohbet mesajlarına yapıştırmayın.
+Alternatif indirme: `python experiment.py --download --output results/yeni_calisma`. Yalnızca belirtilen Kaggle tanımlayıcısı kullanılır. Ağ veya kimlik doğrulama sorunu halinde başka veriyle devam edilmez. Anahtarları veya parolaları koda/GitHub'a yazmayın. Yeni çalışma için boş çıktı klasörü kullanın.
 
-Dosya önceden indirilmişse:
+`Kaggle_Deney.ipynb` Kaggle'da aynı veri kümesi Add Input ile eklenip Run All ile çalıştırılabilir. **Depodaki notebook çıktı hücreleri doldurulmamıştır; burada raporlanan gerçek çalışma `experiment.py` modülünün doğrudan çalıştırılmasıdır.** Notebook çalıştırılmış gibi gösterilmemiştir.
 
-```bash
-python experiment.py --csv /tam/yol/phishing_email.csv --output results/kaggle_run
-```
+## Kanıt dosyaları ve sunum
 
-Yeni çalıştırmada yeni bir çıktı klasörü kullanılır; eski ölçümler sessizce ezilmez. İsteğe bağlı `--save-models`, modelleri yerel `models.joblib` dosyasına kaydeder. Güvenilmeyen pickle/joblib dosyalarını açmayın. Kaynak veri CSV'leri ve model dosyaları GitHub'a otomatik yüklenmez.
+Bu depoda gerçek sonuç CSV'si ve toplu doğrulama kaydı bulunur. Yazarlara teslim edilen **Oltalama_Gercek_Deney_Kanitlari.zip** ayrıca örnek düzeyi test olasılıkları, ayrım hash kayıtları, çalıştırma manifesti, model seçimi kayıtları, grafikler ve yeniden doğrulama kodunu içerir. Ham e-posta metinleri bu kanıt paketine eklenmez. Güvenilmeyen pickle/joblib dosyalarını açmayın.
 
-## Deney tasarımı
+Tam metin ve sunum kod satırı içermez; yöntem akışı ve gerçek ölçümleri içerir. Kaynak kod referansı bu deponun gerçek bağlantısıdır. Depo kontrol tarihinde **özel erişimli** olduğundan öğretim elemanı ve dinleyicilerin inceleyebilmesi için gerekli erişim ayrıca sağlanmalıdır. Görünürlük kendiliğinden değiştirilmemiştir.
 
-**A — Metin:** 1–2 gram TF-IDF ve lojistik regresyon.  
-**B — Göstergeler:** Aciliyet, korku/tehdit, ödül ve güven/otorite sözcük gruplarına ait 14 açıklanabilir özellik ve lojistik regresyon.  
-**C — Birleşik:** Aynı TF-IDF temsili ile aynı 14 gösterge ve lojistik regresyon.
+## Sınırlılıklar
 
-Gösterge sözlükleri `experiment.py` içinde dondurulmuştur. Bunlar araştırmacı tanımlı İngilizce sözcük listeleridir; doğrulanmış duygu etiketleri, insan duygu ölçümü, duygusal zekâ modeli veya nedensel psikoloji ölçümü değildir. Olumsuzlama, ironi ve bağlamın tamamını çözmezler. Ana hipotez C'nin A'ya ek katkısıdır; iyileşme çıkması zorunlu değildir.
-
-### Veri bütünlüğü ve ayrım
-
-Yalnızca birleşik `phishing_email.csv` kullanılır; aynı paketteki alt kaynaklar bu dosyaya yeniden eklenerek çift sayım yapılmaz. Eksik/boş kayıtlar ve aynı normalize metnin tekrarları sayılır. Aynı normalize metne farklı etiketler verilmişse bu çelişkili grubun bütün kayıtları çıkarılır. 0/1 dışı etiketler görülürse program durur.
-
-URL/e-posta metinleri maskelenir; HTML içerik metin olarak temizlenir. Hiçbir e-posta bağlantısına istek gönderilmez. Normalize metinler ilk 20.000 karakterle sınırlandırılır. Bu tercih veri denetiminde kaydedilir ve uzun iletilerin sonundaki ipuçlarını kaybettirebilir.
-
-URL, e-posta, sayı ve noktalama değişikliklerine duyarsız bir şablon özeti üretilir. Aynı şablon grubunun eğitim, doğrulama ve test bölmeleri arasında dağılması engellenir. Bu, anlamı benzer tüm metinlerin ayıklanması anlamına gelmez.
-
-İlk grup-tabakalı 5-kat ayrımının bir katı test için ayrılır. Kalan geliştirme verisinin ilk grup-tabakalı 4-kat ayrımından bir katı doğrulama olur: yaklaşık %60 eğitim, %20 doğrulama, %20 test. Grup boyutlarından dolayı oranlar tam eşit olmayabilir. Bu işlemler **5-kat çapraz doğrulama sonucu raporlama** değildir; yalnızca tek sabit ayrımı üretir. Rastgele tohum 42'dir.
-
-### Model seçimi ve değerlendirme
-
-C değerleri 0,1; 1 ve 10'dur. Her model için doğrulama macro-F1'i en yüksek olan C seçilir; eşitlikte küçük C kullanılır. Tahmin eşiği 0,5 ve sınıf ağırlığı `balanced` olarak sabittir. TF-IDF sözlüğü ve sayısal özellik ölçeklemesi önce yalnızca eğitim bölümünde öğrenilir. Seçimden sonra eğitim+doğrulama üzerinde yeniden öğrenilir; bağımsız test bölümünde tek son değerlendirme yapılır.
-
-Ölçüler: accuracy, balanced accuracy, pozitif sınıf precision/recall/F1, macro-F1, ROC-AUC, **average precision (AP)**, yanlış pozitif oranı ve TN/FP/FN/TP. AP, trapez yöntemiyle hesaplanmış PR-AUC diye adlandırılmaz.
-
-C−A pozitif sınıf F1 farkı için aynı test şablon gruplarını birlikte yeniden örnekleyen 1.000 tekrarlı eşlenik bootstrap ve %95 yüzdelik aralık hesaplanır. Aralık tek ayrım ve sabit modeller koşulundadır; dış veri başarısı veya nedensellik kanıtı değildir.
-
-## Gerçek çalıştırma sonrasında üretilecek dosyalar
-
-- `run_manifest.json`: tamamlanma durumu, veri SHA-256 özeti, boyut, ayarlar, kütüphane sürümleri ve ayrım sayıları.
-- `data_audit.json`, `split_manifest.csv`: veri temizlik sayıları ve hash temelli ayrım denetimi.
-- `validation_scores.csv`, `metrics.csv`, `metrics.json`, `classification_reports.json`: model seçimi ve gerçek test ölçümleri.
-- `test_predictions.csv`, `paired_f1_comparison.json`: e-posta metni içermeyen örnek düzeyi test tahminleri ve eşlenik karşılaştırma.
-- `cue_descriptives_test.csv`, `cue_model_coefficients.csv`: göstergelerin açıklayıcı çıktıları; katsayılar nedensellik ifade etmez.
-- `f1_comparison.png`, `confusion_*.png`: gerçek ölçümlerden oluşturulan grafikler.
-
-**Kullanım şartı:** `run_manifest.json` içindeki `status` değeri `completed` olmadıkça klasördeki kısmi çıktılar tamamlanmış deney diye raporlanmamalıdır.
-
-## Tam metin ve sunum kuralları
-
-Hocanın talimatına göre tam metne ve slaytlara kaynak kod eklenmez. Kod bu depoda tutulur. Yöntem metni için `docs/METOT_VE_RAPORLAMA.md`, akış için `docs/akis.mmd` hazırlanmıştır. Akış görseli kullanılabilir; sonuç slaytları ancak gerçek çalıştırma tamamlandığında hazırlanmalıdır.
-
-Depo henüz oluşturulmadığından gerçek bir GitHub bağlantısı verilmemiştir. Bu klasör bir depoya yüklendikten sonra deponun **gerçek URL'si ve mümkünse commit kimliği** Materyal ve Metot bölümüne ve sunumun son slaydına eklenmelidir. Yapılmamış yükleme veya temsili URL, mevcut depo diye gösterilmemelidir.
-
-## Bilimsel sınırlılıklar
-
-Verinin etiket sözlüğü ham kaynakla teyit edilmelidir. Pozitif sınıf spam, dolandırıcılık ve oltalamayı birlikte içeriyorsa başarı saf oltalama başarısı olarak adlandırılmaz. İngilizce sözlükler Türkçe saldırılarda doğrulanmış değildir; dil dağılımı bu hazırlama aşamasında ölçülmemiştir. Şablon gruplaması tüm yakın kopyaları ve kaynak yanlılığını gidermez. Zamansal, kaynak-dışı veya modern saldırı değerlendirmesi bu protokolde bulunmaz. Veri üzerinde yüksek iç test skoru elde edilse bile gerçek e-posta akışında aynı başarı varsayılamaz.
+Kaynak pozitif sınıfı spam ve oltalamayı birlikte kapsar; bu oranlar saf kimlik-avı veya gerçek üretim trafiği başarısı değildir. İngilizce sabit sözlükler doğrulanmış duygu etiketleri değildir; olumsuzlama ve bağlamı bütünüyle çözmez. Kaynak metinlerin ön işlenmesi çok sözcüklü örüntü eşleşmelerini etkileyebilir. Tek iç ayrım kaynak-dışı, zamansal veya güncel Türkçe e-posta başarısını kanıtlamaz. Şablon gruplaması tüm yakın kopyaları veya kaynak yanlılığını gidermez. 20.000 karakter sınırı uzun içerikleri kesebilir.
 
 ## Kaynaklar
 
-1. Naser Abdullah Alam. *Phishing Email Dataset*. Kaggle. https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset
-2. scikit-learn, *StratifiedGroupKFold*. https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedGroupKFold.html
-3. scikit-learn, *TfidfVectorizer*. https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
-4. scikit-learn, *LogisticRegression*. https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
-5. scikit-learn, *average_precision_score*. https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html
+1. Alam, N. A. Phishing Email Dataset. Kaggle. https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset
+2. Al-Subaiey ve diğerleri (2024). Novel Interpretable and Robust Web-based AI Platform for Phishing Email Detection. https://arxiv.org/abs/2405.11619
+3. scikit-learn: StratifiedGroupKFold, TfidfVectorizer, LogisticRegression ve average_precision_score resmi dokümantasyonu. https://scikit-learn.org/stable/
 
-Veri kümesinin yeniden dağıtım koşulları bağımsız olarak doğrulanmadığı için ham e-postalar bu pakete eklenmemiştir. Kütüphane lisansları kendi projelerine aittir; proje için açık kaynak lisansı seçimi yazarlara bırakılmıştır.
+Ham verinin yeniden dağıtımı ve proje lisansı ayrı konulardır; bu güncelleme yeni bir açık kaynak lisansı veya veri yeniden dağıtım izni tanımlamaz.
